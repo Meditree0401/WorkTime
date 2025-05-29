@@ -118,7 +118,7 @@ if not st.session_state['all_data'].empty:
     if not summary.empty:
         avg_chart = alt.Chart(summary).mark_bar(size=20).encode(
             x=alt.X('표시이름', sort='-y', title='사원명(사번)').axis(
-                labelAngle=270, labelFontSize=13, labelLimit=300
+                labelAngle=270, labelFontSize=10, labelLimit=300
             ),
             y=alt.Y('평균근무시간', title='평균 근무시간'),
             tooltip=['표시이름', '평균근무시간', '평균근무시간_표시']
@@ -126,6 +126,20 @@ if not st.session_state['all_data'].empty:
             width=30 * len(summary), height=400
         )
         st.altair_chart(avg_chart, use_container_width=True)
+
+    st.subheader("📈 부서별 평균근무시간 시각화")
+    dept_summary = filtered_df.groupby('소속부서').agg(
+        총실근무시간=('실근무시간', 'sum'),
+        총근무일수=('근무일', 'nunique')
+    ).reset_index()
+    dept_summary['평균근무시간'] = (dept_summary['총실근무시간'] / dept_summary['총근무일수']).round(2)
+    dept_summary = dept_summary.sort_values('평균근무시간', ascending=False)
+    chart = alt.Chart(dept_summary).mark_bar().encode(
+        x=alt.X('소속부서', sort='-y'),
+        y=alt.Y('평균근무시간', title='평균 근무시간'),
+        tooltip=['소속부서', '총실근무시간', '총근무일수', '평균근무시간']
+    ).properties(width=700, height=400)
+    st.altair_chart(chart, use_container_width=True)
 
     st.subheader("📘 연간 요약")
     monthly = df.groupby(['소속부서', '사원번호', '사원명', '근무월']).agg(
@@ -144,6 +158,16 @@ if not st.session_state['all_data'].empty:
     yearly['연간총실근무시간_표시'] = yearly['연간총실근무시간'].apply(format_hours_minutes)
     yearly['연간평균근무시간_표시'] = yearly['연간평균근무시간'].apply(format_hours_minutes)
     st.dataframe(yearly, use_container_width=True)
+
+    st.subheader("📈 부서별 연간 평균근무시간 시각화")
+    dept_chart = yearly.groupby('소속부서')[['연간총실근무시간', '연간근무일수']].sum().reset_index()
+    dept_chart['연간평균근무시간'] = (dept_chart['연간총실근무시간'] / dept_chart['연간근무일수']).round(2)
+    chart = alt.Chart(dept_chart).mark_bar().encode(
+        x=alt.X('소속부서', sort='-y'),
+        y='연간평균근무시간',
+        tooltip=['소속부서', '연간총실근무시간', '연간근무일수', '연간평균근무시간']
+    ).properties(width=700, height=400)
+    st.altair_chart(chart, use_container_width=True)
 
     st.subheader("📈 사원별 연간 평균근무시간 시각화")
     yearly_chart = alt.Chart(yearly).mark_bar(size=20).encode(
