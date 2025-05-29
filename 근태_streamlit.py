@@ -121,12 +121,11 @@ if not st.session_state['all_data'].empty:
 
     st.subheader("📊 사원별 평균근무시간 시각화")
     if not summary.empty:
-        avg_chart = alt.Chart(summary).mark_bar(size=30).encode(
-            x=alt.X('표시이름', sort='-y', title='사원명(사번)')
-              .axis(labelAngle=0),
-            y=alt.Y('평균근무시간', title='평균 근무시간'),
-            tooltip=['표시이름', '평균근무시간', '평균근무시간_표시']
-        ).properties(width=40 * len(summary), height=400)
+        avg_chart = alt.Chart(summary).mark_bar(size=20).encode(
+    x=alt.X('표시이름', sort='-y', title='사원명(사번)').axis(labelAngle=0, labelFontSize=10, labelLimit=100),
+    y=alt.Y('평균근무시간', title='평균 근무시간'),
+    tooltip=['표시이름', '평균근무시간', '평균근무시간_표시']
+    ).properties(width=30 * len(summary), height=400)
         st.altair_chart(avg_chart, use_container_width=True)
 
     st.subheader("📈 부서별 평균근무시간 시각화")
