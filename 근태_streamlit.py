@@ -118,7 +118,7 @@ if not st.session_state['all_data'].empty:
     if not summary.empty:
         avg_chart = alt.Chart(summary).mark_bar(size=20).encode(
             x=alt.X('표시이름', sort='-y', title='사원명(사번)').axis(
-                labelAngle=270, labelFontSize=10, labelLimit=300
+                labelAngle=270, labelFontSize=13, labelLimit=300
             ),
             y=alt.Y('평균근무시간', title='평균 근무시간'),
             tooltip=['표시이름', '평균근무시간', '평균근무시간_표시']
