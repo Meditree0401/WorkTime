@@ -114,7 +114,7 @@ if not st.session_state['all_data'].empty:
 
     st.subheader("📊 사원별 평균근무시간 시각화")
     if not summary.empty:
-        avg_chart = alt.Chart(summary).mark_bar(size=30).encode(
+        avg_chart = alt.Chart(summary).mark_bar(size=15).encode(
             x=alt.X('표시이름', sort='-y', title='사원명(사번)').axis(labelAngle=0),
             y=alt.Y('평균근무시간', title='평균 근무시간'),
             tooltip=['표시이름', '평균근무시간', '평균근무시간_표시']
@@ -165,7 +165,7 @@ if not st.session_state['all_data'].empty:
     st.altair_chart(chart, use_container_width=True)
 
     st.subheader("📈 사원별 연간 평균근무시간 시각화")
-    yearly_chart = alt.Chart(yearly).mark_bar(size=30).encode(
+    yearly_chart = alt.Chart(yearly).mark_bar(size=15).encode(
         x=alt.X('표시이름', sort='-y', title='사원명(사번)').axis(labelAngle=0),
         y=alt.Y('연간평균근무시간', title='연간 평균 근무시간'),
         tooltip=['표시이름', '연간평균근무시간', '연간평균근무시간_표시']
