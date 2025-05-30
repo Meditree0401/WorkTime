@@ -106,9 +106,7 @@ if not st.session_state['all_data'].empty:
         근무일수=('월별근무일수', 'sum')
     ).reset_index()
     summary['평균근무시간'] = (summary['총실근무시간'] / summary['근무일수']).round(2)
-    summary['표시이름'] = summary['사원명'] + '(' + summary['사원번호'].astype(str) + ')'
-    summary['총실근무시간'] = summary['총실근무시간'].round(2)
-    summary['평균근무시간'] = summary['평균근무시간'].round(2)
+    summary['표시이름'] = summary['사원명'] + '\n(' + summary['사원번호'].astype(str) + ')'
     summary['총실근무시간_표시'] = summary['총실근무시간'].apply(format_hours_minutes)
     summary['평균근무시간_표시'] = summary['평균근무시간'].apply(format_hours_minutes)
 
@@ -116,10 +114,8 @@ if not st.session_state['all_data'].empty:
 
     st.subheader("📊 사원별 평균근무시간 시각화")
     if not summary.empty:
-        avg_chart = alt.Chart(summary).mark_bar(size=20).encode(
-            x=alt.X('표시이름', sort='-y', title='사원명(사번)').axis(
-                labelAngle=270, labelFontSize=10, labelLimit=500
-            ),
+        avg_chart = alt.Chart(summary).mark_bar(size=30).encode(
+            x=alt.X('표시이름', sort='-y', title='사원명(사번)').axis(labelAngle=0),
             y=alt.Y('평균근무시간', title='평균 근무시간'),
             tooltip=['표시이름', '평균근무시간', '평균근무시간_표시']
         ).properties(
@@ -134,11 +130,12 @@ if not st.session_state['all_data'].empty:
     ).reset_index()
     dept_summary['평균근무시간'] = (dept_summary['총실근무시간'] / dept_summary['총근무일수']).round(2)
     dept_summary = dept_summary.sort_values('평균근무시간', ascending=False)
+
     dept_chart = alt.Chart(dept_summary).mark_bar().encode(
-        x=alt.X('소속부서', sort='-y', title='소속부서'),
+        x=alt.X('소속부서', sort='-y', title='소속부서').axis(labelAngle=0),
         y=alt.Y('평균근무시간', title='평균 근무시간'),
         tooltip=['소속부서', '총실근무시간', '총근무일수', '평균근무시간']
-    ).properties(width=700, height=400)
+    ).properties(width=30 * len(dept_summary), height=400)
     st.altair_chart(dept_chart, use_container_width=True)
 
     st.subheader("📘 연간 요약")
@@ -152,9 +149,7 @@ if not st.session_state['all_data'].empty:
         연간근무일수=('월별근무일수', 'sum')
     ).reset_index()
     yearly['연간평균근무시간'] = (yearly['연간총실근무시간'] / yearly['연간근무일수']).round(2)
-    yearly['표시이름'] = yearly['사원명'] + '(' + yearly['사원번호'].astype(str) + ')'
-    yearly['연간총실근무시간'] = yearly['연간총실근무시간'].round(2)
-    yearly['연간평균근무시간'] = yearly['연간평균근무시간'].round(2)
+    yearly['표시이름'] = yearly['사원명'] + '\n(' + yearly['사원번호'].astype(str) + ')'
     yearly['연간총실근무시간_표시'] = yearly['연간총실근무시간'].apply(format_hours_minutes)
     yearly['연간평균근무시간_표시'] = yearly['연간평균근무시간'].apply(format_hours_minutes)
     st.dataframe(yearly, use_container_width=True)
@@ -163,17 +158,15 @@ if not st.session_state['all_data'].empty:
     dept_chart = yearly.groupby('소속부서')[['연간총실근무시간', '연간근무일수']].sum().reset_index()
     dept_chart['연간평균근무시간'] = (dept_chart['연간총실근무시간'] / dept_chart['연간근무일수']).round(2)
     chart = alt.Chart(dept_chart).mark_bar().encode(
-        x=alt.X('소속부서', sort='-y'),
+        x=alt.X('소속부서', sort='-y', title='소속부서').axis(labelAngle=0),
         y='연간평균근무시간',
         tooltip=['소속부서', '연간총실근무시간', '연간근무일수', '연간평균근무시간']
-    ).properties(width=700, height=400)
+    ).properties(width=30 * len(dept_chart), height=400)
     st.altair_chart(chart, use_container_width=True)
 
     st.subheader("📈 사원별 연간 평균근무시간 시각화")
-    yearly_chart = alt.Chart(yearly).mark_bar(size=20).encode(
-        x=alt.X('표시이름', sort='-y', title='사원명(사번)').axis(
-            labelAngle=270, labelFontSize=10, labelLimit=500
-        ),
+    yearly_chart = alt.Chart(yearly).mark_bar(size=30).encode(
+        x=alt.X('표시이름', sort='-y', title='사원명(사번)').axis(labelAngle=0),
         y=alt.Y('연간평균근무시간', title='연간 평균 근무시간'),
         tooltip=['표시이름', '연간평균근무시간', '연간평균근무시간_표시']
     ).properties(
