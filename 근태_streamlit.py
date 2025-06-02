@@ -4,7 +4,6 @@ from datetime import timedelta
 import io
 import altair as alt
 from openpyxl import Workbook
-from openpyxl.styles import Border, Side, Alignment, Font
 from openpyxl.utils.dataframe import dataframe_to_rows
 
 st.set_page_config(page_title="총합 근태관리 웹앱", layout="wide")
@@ -112,14 +111,21 @@ if not st.session_state['all_data'].empty:
 
     st.dataframe(summary, use_container_width=True)
 
+    st.download_button(
+        label="📥 월별 요약 엑셀 다운로드",
+        data=convert_df_to_excel(summary),
+        file_name=f"{selected_month}_근무요약.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
     st.subheader("📊 사원별 평균근무시간 시각화")
     if not summary.empty:
         avg_chart = alt.Chart(summary).mark_bar(size=30).encode(
-            x=alt.X('표시이름', sort='-y', title='사원명(사번)').axis(labelAngle=-90, labelFontSize=10),
+            x=alt.X('표시이름', sort='-y', title='사원명\n(사번)').axis(labelAngle=-90, labelFontSize=11),
             y=alt.Y('평균근무시간', title='평균 근무시간'),
             tooltip=['표시이름', '평균근무시간', '평균근무시간_표시']
         ).properties(
-            width=30 * len(summary), height=400
+            width=20 * len(summary), height=400
         )
         st.altair_chart(avg_chart, use_container_width=True)
 
@@ -139,12 +145,19 @@ if not st.session_state['all_data'].empty:
     yearly['연간평균근무시간_표시'] = yearly['연간평균근무시간'].apply(format_hours_minutes)
     st.dataframe(yearly, use_container_width=True)
 
+    st.download_button(
+        label="📥 연간 요약 엑셀 다운로드",
+        data=convert_df_to_excel(yearly),
+        file_name="연간_근무요약.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
     st.subheader("📈 사원별 연간 평균근무시간 시각화")
     yearly_chart = alt.Chart(yearly).mark_bar(size=30).encode(
-        x=alt.X('표시이름', sort='-y', title='사원명(사번)').axis(labelAngle=-90, labelFontSize=10),
+        x=alt.X('표시이름', sort='-y', title='사원명\n(사번)').axis(labelAngle=-90, labelFontSize=11),
         y=alt.Y('연간평균근무시간', title='연간 평균 근무시간'),
         tooltip=['표시이름', '연간평균근무시간', '연간평균근무시간_표시']
     ).properties(
-        width=30 * len(yearly), height=400
+        width=20 * len(yearly), height=400
     )
     st.altair_chart(yearly_chart, use_container_width=True)
